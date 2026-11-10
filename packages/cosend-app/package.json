@@ -1,0 +1,60 @@
+{
+  "name": "cosend-app",
+  "version": "1.0.0",
+  "description": "Alias of the cosend package, the Cosend Node SDK: verify Cosend's signed WhatsApp webhooks and call the Cosend REST API. Use cosend in new code.",
+  "keywords": [
+    "cosend",
+    "whatsapp",
+    "whatsapp-business-api",
+    "whatsapp-cloud-api",
+    "coexistence",
+    "webhook",
+    "sdk"
+  ],
+  "homepage": "https://cosend.app/docs/api",
+  "bugs": {
+    "url": "https://github.com/cosendhq/cosend-node/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cosendhq/cosend-node.git",
+    "directory": "packages/cosend-app"
+  },
+  "license": "MIT",
+  "author": "True North Tech Group LLC",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsup",
+    "test": "node --test test/alias.test.mjs"
+  },
+  "dependencies": {
+    "cosend": "^1.0.0"
+  },
+  "devDependencies": {
+    "tsup": "^9.0.0",
+    "typescript": "^6.0.3"
+  }
+}

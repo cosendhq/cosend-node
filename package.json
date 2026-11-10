@@ -1,0 +1,15 @@
+{
+  "name": "cosend-node",
+  "private": true,
+  "description": "Workspace for the cosend npm package and its alias cosend-app.",
+  "license": "MIT",
+  "workspaces": [
+    "packages/cosend",
+    "packages/cosend-app"
+  ],
+  "scripts": {
+    "build": "npm run build -w cosend && npm run build -w cosend-app",
+    "typecheck": "npm run typecheck -w cosend",
+    "test": "npm test -w cosend && npm test -w cosend-app"
+  }
+}

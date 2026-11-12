@@ -1,7 +1,7 @@
 import { defineConfig } from "tsup";
 
-// The alias is one line, `export * from "cosend"`, built as ESM and CommonJS with types.
-// `cosend` is a dependency, so tsup leaves it external: nothing of it is copied in.
+// ESM (dist/index.js) and CommonJS (dist/index.cjs), each with its own declaration file
+// (index.d.ts, index.d.cts). Node 20 is the floor in package.json `engines`.
 export default defineConfig({
   entry: ["src/index.ts"],
   format: ["esm", "cjs"],

@@ -2,8 +2,7 @@
 
 ## 1.0.0
 
-First release of `cosend`, the Cosend Node SDK, and of `cosend-app` 1.0.0, its alias (a re-export
-of `cosend` that replaces the 0.0.0 name placeholder).
+First release of `cosend-app`, the Cosend Node SDK.
 
 - `verifyWebhook(rawBody, header, secret, options?)`: verifies `Cosend-Signature: t=…,v1=…`
   (HMAC-SHA256 over `"{t}.{raw body}"`), five-minute default tolerance, every `v1` and one or

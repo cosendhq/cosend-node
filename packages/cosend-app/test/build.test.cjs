@@ -7,8 +7,8 @@ const root = join(__dirname, "..");
 const pkg = require("../package.json");
 
 test("the CommonJS build exports what the ESM build exports", async () => {
-  const cjs = require("cosend");
-  const esm = await import("cosend");
+  const cjs = require("cosend-app");
+  const esm = await import("cosend-app");
   assert.deepEqual(Object.keys(cjs).sort(), Object.keys(esm).sort());
   for (const name of ["Cosend", "CosendError", "CosendSignatureError", "constructEvent", "verifyWebhook", "verifyForwardedDelivery", "VERSION"]) {
     assert.equal(typeof cjs[name], typeof esm[name], name);
@@ -17,7 +17,7 @@ test("the CommonJS build exports what the ESM build exports", async () => {
 });
 
 test("VERSION and the User-Agent follow package.json", () => {
-  assert.equal(require("cosend").VERSION, pkg.version);
+  assert.equal(require("cosend-app").VERSION, pkg.version);
 });
 
 test("package.json: no dependencies, Node 20+, both builds and both declaration files exist", () => {

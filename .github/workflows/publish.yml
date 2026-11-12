@@ -1,22 +1,22 @@
 name: publish
 
-# cosend, then cosend-app -> npm, with provenance, via npm Trusted Publishing (OIDC).
+# cosend-app -> npm, with provenance, via npm Trusted Publishing (OIDC).
 #
-# npm side: a Trusted Publisher on EACH package (cosend and cosend-app) with owner cosendhq,
-# repository cosend-node, workflow filename publish.yml, no environment, and "npm publish"
-# allowed (configurations made after 3 Sep 2026 allow only `npm stage publish` unless that box is
-# ticked). The filename is part of the trust, so renaming this file breaks publishing until both
-# npm settings change too. There is no NPM_TOKEN: npm exchanges this job's OIDC token for a
-# short-lived publish token. A trusted publisher can only be added to a package that already
-# exists on npm, so `cosend` needs one manual publish from the cosendapp account first.
+# npm side: one Trusted Publisher, on the cosend-app package, with owner cosendhq, repository
+# cosend-node, workflow filename publish.yml, no environment, and "npm publish" allowed
+# (configurations made after 3 Sep 2026 allow only `npm stage publish` unless that box is ticked).
+# The filename is part of the trust, so renaming this file breaks publishing until the npm setting
+# changes too. There is no NPM_TOKEN: npm exchanges this job's OIDC token for a short-lived
+# publish token. A trusted publisher can only be added to a package that already exists on npm;
+# cosend-app does, published once from the cosendapp account.
 #
 # Trusted Publishing needs npm CLI >= 11.5.1, Node >= 22.14.0, a GitHub-hosted runner and
 # `id-token: write`. npm only generates provenance from a PUBLIC repository, and each
 # package.json `repository.url` must name this repository.
 #
 # To release: land the version bump on main, then publish a GitHub release whose tag is
-# v<cosend's version>, e.g. v1.0.0. A package whose version is already on npm is skipped, so a
-# rerun after a partial failure finishes the job instead of failing on the published one.
+# v<cosend-app's version>, e.g. v1.0.0. A version already on npm is skipped, so a rerun after a
+# failure finishes the job instead of failing on the published version.
 
 on:
   release:
@@ -47,13 +47,13 @@ jobs:
           node --version
           npm --version
 
-      - name: The release tag names cosend's version
+      - name: The release tag names cosend-app's version
         env:
           TAG: ${{ github.event.release.tag_name }}
         run: |
-          version="$(node -p "require('./packages/cosend/package.json').version")"
+          version="$(node -p "require('./packages/cosend-app/package.json').version")"
           if [ "$TAG" != "v$version" ]; then
-            echo "::error::Release tag $TAG does not match packages/cosend version $version (expected v$version)."
+            echo "::error::Release tag $TAG does not match packages/cosend-app version $version (expected v$version)."
             exit 1
           fi
 
@@ -62,15 +62,13 @@ jobs:
       - run: npm run build
       - run: npm test
 
-      # cosend first: cosend-app depends on it.
-      - name: Publish cosend, then cosend-app
+      - name: Publish cosend-app
+        working-directory: packages/cosend-app
         run: |
-          for dir in packages/cosend packages/cosend-app; do
-            name="$(node -p "require('./$dir/package.json').name")"
-            version="$(node -p "require('./$dir/package.json').version")"
-            if [ "$(npm view "$name@$version" version 2>/dev/null)" = "$version" ]; then
-              echo "$name@$version is already on npm; skipping."
-              continue
-            fi
-            (cd "$dir" && npm publish --provenance --access public)
-          done
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if [ "$(npm view "$name@$version" version 2>/dev/null)" = "$version" ]; then
+            echo "$name@$version is already on npm; skipping."
+            exit 0
+          fi
+          npm publish --provenance --access public
